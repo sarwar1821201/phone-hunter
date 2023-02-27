@@ -1,18 +1,18 @@
-const loadPhone= async(searchText)=>{
+const loadPhone= async(searchText, dataLimit)=>{
    const url= `https://openapi.programming-hero.com/api/phones?search=${searchText}`
    const res= await fetch(url);
    const data= await res.json();
-   displayPhones(data.data);
+   displayPhones(data.data, dataLimit);
 }
 
-const displayPhones= phones => {
+const displayPhones= (phones, dataLimit)=> {
     //console.log(phones);
     const phonesContainer = document.getElementById('phone-container');
     phonesContainer.innerText=''
 
     //display 10 phones only
     const showAll= document.getElementById('show-all')
-  if(phones.length>10){
+  if( dataLimit && phones.length>10){
     phones= phones.slice(0,10);
      
      showAll.classList.remove('d-none')
@@ -20,6 +20,8 @@ const displayPhones= phones => {
   else{
     showAll.classList.add('d-none')
   }
+
+
     //display no phone founds
     const noPhone= document.getElementById('no-phone-message')
     if(phones.length===0){
@@ -29,7 +31,8 @@ const displayPhones= phones => {
         noPhone.classList.add('d-none')
     }
 
-phones= phones.slice(0,10);
+//display all phones
+//phones= phones.slice(0,10);
     phones.forEach(phone => {
         const phoneDiv= document.createElement('div');
         phoneDiv.classList.add('col');
@@ -49,13 +52,17 @@ phones= phones.slice(0,10);
     toggleSpinner(false)
 }
 
+const processSearch= (dataLimit) =>{
+  toggleSpinner(true)
+  const searchField= document.getElementById('search-field');
+  const searchText= searchField.value;
+  loadPhone(searchText,dataLimit);
+}
+
 //handle search button click
 document.getElementById('btn-search').addEventListener('click', function(){
     //start loader
-  toggleSpinner(true)
-    const searchField= document.getElementById('search-field');
-    const searchText= searchField.value;
-    loadPhone(searchText);
+  processSearch(10);
 
 
 })
@@ -68,4 +75,11 @@ const toggleSpinner= isLoading =>{
         loaderSection.classList.add('d-none')
     }
 }
+
+// not the best way to show all
+document.getElementById('btn-show-all').addEventListener('click', function(){
+  processSearch();
+})
+
+
 //loadPhone();
